@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CMJ - Cálculo Maquininha (Web)</title>
+    <meta name="theme-color" content="#72B7FF">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192.png">
+    <style>
+      :root { --blue:#1E88E5; --blue-light:#72B7FF; --green:#2E7D32; --red:#C62828; --bg:#f7fbff; }
+      * { box-sizing: border-box }
+      body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color:#123; }
+      header { position:sticky; top:0; z-index:5; background:white; padding:12px 16px; box-shadow: 0 4px 16px rgba(0,0,0,.06); display:flex; align-items:center; gap:12px }
+      header .logo { width:36px; height:36px; border-radius:10px; background:var(--blue-light); display:grid; place-items:center; font-weight:800; color:white; }
+      header h1 { font-size:18px; margin:0; }
+      .wrap { max-width: 1000px; margin: 16px auto; padding: 0 12px; }
+      .card { background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:16px; margin-bottom:16px; }
+      .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:12px; }
+      button, input { font: inherit }
+      .btn { background:var(--blue); color:white; border:none; padding:12px 14px; border-radius:12px; cursor:pointer; }
+      .btn.outline { background:transparent; border:2px solid var(--blue); color:var(--blue) }
+      .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+      .muted { opacity:.7 }
+      .machine { padding:14px; border:1px solid #e7eef7; border-radius:14px; background:#fbfdff; display:flex; flex-direction:column; gap:10px }
+      .machine h3 { margin:0; font-size:16px }
+      .machine .total { font-weight:700 }
+      .list { max-height:260px; overflow:auto; border-top:1px dashed #e5edf7; margin-top:8px; padding-top:8px }
+      .item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f2f6fb }
+      .in { color: var(--green) } .out { color: var(--red) }
+      .footer { text-align:center; padding:24px; color:#567 }
+      input[type="text"], input[type="date"] { padding:10px 12px; border:1px solid #dbe6f3; border-radius:12px; width:100%; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">CMJ</div>
+      <h1>CMJ — Cálculo Maquininha (Web)</h1>
+      <div style="flex:1"></div>
+      <button class="btn outline" id="installBtn" hidden>Instalar</button>
+    </header>
+
+    <div class="wrap">
+      <div class="card row">
+        <div class="row">
+          <label for="date">Data:</label>
+          <input type="date" id="date">
+        </div>
+        <div class="row" style="margin-left:auto">
+          <button class="btn" id="viewResume">Resumo do dia</button>
+          <button class="btn outline" id="clearByDate" style="border-color:#C62828; color:#C62828">Limpar por data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:6px 0 12px">Maquininhas</h2>
+        <div class="grid" id="machines"></div>
+      </div>
+
+      <div class="card" id="resumeCard" hidden>
+        <h2 style="margin:6px 0 12px">Resumo do dia</h2>
+        <div id="resumeList"></div>
+      </div>
+
+      <p class="footer muted">Dados salvos no seu dispositivo (offline). Para instalar como app: menu do Chrome → <b>Instalar app</b>.</p>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      // PWA install prompt
+      let deferredPrompt;
+      const installBtn = document.getElementById('installBtn');
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.hidden = false;
+      });
+      installBtn?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') installBtn.hidden = true;
+        deferredPrompt = null;
+      });
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js');
+        });
+      }
+    </script>
+  </body>
+</html>
