@@ -1,5 +1,6 @@
+// CMJ Web v6.3.1 — Robust focus on input to open mobile keyboard
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
-const STORAGE_KEY = 'cmj_data_v63';
+const STORAGE_KEY = 'cmj_data_v631';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
@@ -50,11 +51,30 @@ fromEl.value=today; toEl.value=today;
 let names = loadNames();
 
 function routeToHome(){ homeView.hidden=false; machineView.hidden=true; }
+
+function focusInputNow(){
+  if(!valueInput) return;
+  try {
+    valueInput.removeAttribute('readonly');
+    valueInput.focus({ preventScroll: true });
+    valueInput.select();
+    valueInput.setSelectionRange(0, (valueInput.value||'').length);
+    valueInput.scrollIntoView({ block:'center', inline:'nearest' });
+  } catch(e){}
+}
+
 function routeToMachine(id){
   homeView.hidden=true;
   machineView.hidden=false;
   showMachine(id);
-  setTimeout(()=>{ valueInput.focus(); valueInput.select(); }, 50);
+  // Try focus immediately, then schedule more attempts to satisfy iOS/Android quirks
+  focusInputNow();
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      focusInputNow();
+    });
+  });
+  setTimeout(focusInputNow, 120);
 }
 
 function renderHome(){
@@ -64,7 +84,8 @@ function renderHome(){
     const icon=document.createElement('div'); icon.className='icon'; icon.textContent=i;
     const title=document.createElement('h3'); title.textContent=names[i] || `Maquininha ${i}`;
     card.appendChild(icon); card.appendChild(title);
-    card.addEventListener('click',()=>routeToMachine(i));
+    // use pointerup to stay in same user gesture on mobile
+    card.addEventListener('pointerup',()=>routeToMachine(i), { passive: true });
     frag.appendChild(card);
   }
   machinesGrid.replaceChildren(frag);
