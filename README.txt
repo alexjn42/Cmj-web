@@ -1,17 +1,11 @@
-CMJ (Web) — PWA instalável no Chrome
-------------------------------------
-Como publicar sem servidor:
-1) Acesse **Netlify** (netlify.com) → Add new site → Deploy manually → arraste a pasta inteira deste ZIP.
-   Ou **Vercel** → New Project → arraste a pasta.
-   Ou **GitHub Pages** → suba os arquivos e ative Pages.
-2) Abra a URL no **Chrome Android** e instale (menu → "Instalar app").
+CMJ (Web) v3 — Período de X até Y
+----------------------------------
+- Resumo do período: selecione "De" e "Até" e veja o total de cada maquininha.
+- Limpar período: apaga todos os registros dentro do intervalo.
+- Telas separadas (home com 12 ícones e tela por maquininha).
+- PWA offline e instalável.
 
-Rodar local para testes:
-- Precisará servir via HTTP (por ex.):
-  python -m http.server 5500  # depois abra http://localhost:5500
-
-Funções:
-- 12 maquininhas; Entrada (verde) / Saída (vermelho);
-- Resumo por dia e limpar por data;
-- Salva no localStorage (offline);
-- Formatação BRL (R$).
+Como atualizar no GitHub Pages:
+1) Baixe o ZIP e extraia.
+2) Faça upload dos arquivos no repositório (substitua os antigos).
+3) Aguarde 1–2 minutos e recarregue seu link.

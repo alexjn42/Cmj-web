@@ -1,5 +1,5 @@
 
-const CACHE = 'cmj-web-v1';
+const CACHE = 'cmj-web-v3';
 const CORE = ['./','./index.html','./app.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png','./offline.html'];
 
 self.addEventListener('install', e => {
