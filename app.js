@@ -1,5 +1,5 @@
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
-const STORAGE_KEY = 'cmj_data_v62';
+const STORAGE_KEY = 'cmj_data_v63';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
@@ -50,7 +50,12 @@ fromEl.value=today; toEl.value=today;
 let names = loadNames();
 
 function routeToHome(){ homeView.hidden=false; machineView.hidden=true; }
-function routeToMachine(id){ homeView.hidden=true; machineView.hidden=false; showMachine(id); }
+function routeToMachine(id){
+  homeView.hidden=true;
+  machineView.hidden=false;
+  showMachine(id);
+  setTimeout(()=>{ valueInput.focus(); valueInput.select(); }, 50);
+}
 
 function renderHome(){
   const frag=document.createDocumentFragment();
@@ -132,9 +137,6 @@ function* dateRange(fromIso,toIso){
     yield dt.toISOString().slice(0,10);
   }
 }
-function sumNet(list){ return list.reduce((acc,it)=>acc + (it.t==='in'?it.a:-it.a), 0); }
-function sumIn(list){ return list.reduce((acc,it)=>acc + (it.t==='in'?it.a:0), 0); }
-function sumOut(list){ return list.reduce((acc,it)=>acc + (it.t==='out'?it.a:0), 0); }
 
 viewSummaryBtn?.addEventListener('click', ()=>{
   const from=fromEl.value, to=toEl.value;

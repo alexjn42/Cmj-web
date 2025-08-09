@@ -54,12 +54,10 @@
     </header>
 
     <div class="wrap">
-      <!-- Home: 12 botões apenas (sem título "Maquininhas") -->
       <div class="card" id="homeView">
         <div class="grid" id="machinesGrid"></div>
       </div>
 
-      <!-- Machine -->
       <div class="card" id="machineView" hidden>
         <div class="row" style="justify-content:space-between;">
           <button class="back" id="backHome">← Voltar</button>
@@ -67,7 +65,7 @@
           <span style="width:60px"></span>
         </div>
         <div class="row" style="margin-top:12px">
-          <input type="text" id="valueInput" placeholder="Valor (ex: 10,00)" inputmode="decimal">
+          <input autofocus type="text" id="valueInput" placeholder="Valor (ex: 10,00)" inputmode="decimal">
         </div>
         <div class="row" style="margin-top:12px">
           <button class="btn green" id="btnIn">Retirada</button>
@@ -77,7 +75,6 @@
         <div id="machineList" class="list" style="margin-top:8px"></div>
       </div>
 
-      <!-- Painel de nomes -->
       <div class="card panel" id="namesPanel">
         <h2 style="margin:6px 0 12px">Renomear maquininhas</h2>
         <div class="name-grid" id="nameGrid"></div>
@@ -86,7 +83,6 @@
         </div>
       </div>
 
-      <!-- Botão "Resumo" no final da página -->
       <div class="card">
         <div class="bottom-actions">
           <button class="btn outline small" id="toggleSummary">Resumo</button>
