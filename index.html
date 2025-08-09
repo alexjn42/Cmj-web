@@ -54,9 +54,8 @@
     </header>
 
     <div class="wrap">
-      <!-- Home: 12 botões apenas -->
+      <!-- Home: 12 botões apenas (sem título "Maquininhas") -->
       <div class="card" id="homeView">
-        <h2 style="margin:6px 0 12px">Maquininhas</h2>
         <div class="grid" id="machinesGrid"></div>
       </div>
 
@@ -87,38 +86,24 @@
         </div>
       </div>
 
-      <!-- Botões menores no final da página -->
+      <!-- Botão "Resumo" no final da página -->
       <div class="card">
         <div class="bottom-actions">
-          <button class="btn outline small" id="toggleDay">Resumo do dia</button>
-          <button class="btn outline small" id="toggleRange">Período</button>
+          <button class="btn outline small" id="toggleSummary">Resumo</button>
         </div>
 
-        <div class="panel" id="dayPanel">
+        <div class="panel" id="summaryPanel">
           <div class="section">
-            <div class="title">Resumo do dia:</div>
-            <label for="date">Data</label>
-            <input type="date" id="date">
-            <button class="btn small" id="viewResume">Ver</button>
-            <button class="btn outline small" id="clearByDate" style="border-color:#C62828; color:#C62828">Limpar por data</button>
-          </div>
-          <div class="card" id="resumeCard" hidden>
-            <h3 style="margin:6px 0 12px">Resumo do dia</h3>
-            <div id="resumeList"></div>
-          </div>
-        </div>
-
-        <div class="panel" id="rangePanel">
-          <div class="section">
-            <div class="title">Período:</div>
+            <div class="title">Resumo:</div>
             <label>De</label><input type="date" id="fromDate">
             <span>Até</span><input type="date" id="toDate">
-            <button class="btn small" id="viewRange">Resumo do período</button>
+            <button class="btn small" id="viewSummary">Gerar resumo</button>
             <button class="btn outline small" id="clearRange" style="border-color:#C62828; color:#C62828">Limpar período</button>
           </div>
           <div class="card" id="rangeCard" hidden>
-            <h3 style="margin:6px 0 12px">Resumo do período</h3>
+            <h3 style="margin:6px 0 12px">Saldos por maquininha</h3>
             <div id="rangeList"></div>
+            <div id="summaryTotals" style="margin-top:12px; border-top:1px dashed #e5edf7; padding-top:10px"></div>
           </div>
         </div>
       </div>
