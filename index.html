@@ -24,19 +24,19 @@
       .btn.red { background:var(--red); }
       .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
       .muted { opacity:.7 }
-      .machine-card { padding:18px; border:1px solid #e7eef7; border-radius:14px; background:#fbfdff; display:flex; flex-direction:column; gap:10px; align-items:center; }
+      .machine-card { padding:18px; border:1px solid #e7eef7; border-radius:14px; background:#fbfdff; display:flex; flex-direction:column; gap:10px; align-items:center; cursor:pointer; }
       .icon { width:64px; height:64px; border-radius:16px; background:var(--blue-light); display:grid; place-items:center; font-weight:900; color:white; font-size:22px; }
       .machine-card h3 { margin:6px 0 0; font-size:16px; text-align:center }
-      .total { font-weight:700 }
       .list { max-height:260px; overflow:auto; border-top:1px dashed #e5edf7; margin-top:8px; padding-top:8px }
       .item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f2f6fb }
       .in { color: var(--green) } .out { color: var(--red) }
       .footer { text-align:center; padding:24px; color:#567 }
       input[type="text"], input[type="date"] { padding:10px 12px; border:1px solid #dbe6f3; border-radius:12px; width:100%; }
-      .toolbar { display:flex; gap:10px; align-items:center; justify-content:space-between; }
       .back { background:transparent; border:0; color:var(--blue); font-weight:700; cursor:pointer; }
-      .range { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
-      .range label { opacity:.8 }
+      .reports { display:none; }
+      .reports.show { display:block; }
+      .reports .section { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+      .reports .title { font-weight:800; margin:0 10px 0 0; }
     </style>
   </head>
   <body>
@@ -44,33 +44,12 @@
       <div class="logo">CMJ</div>
       <h1>CMJ — Cálculo Maquininha (Web)</h1>
       <div style="flex:1"></div>
+      <button class="btn outline" id="toggleReports">Relatórios</button>
       <button class="btn outline" id="installBtn" hidden>Instalar</button>
     </header>
 
     <div class="wrap">
-      <div class="card toolbar">
-        <div class="row">
-          <label for="date">Data:</label>
-          <input type="date" id="date">
-        </div>
-        <div class="row">
-          <button class="btn" id="viewResume">Resumo do dia</button>
-          <button class="btn outline" id="clearByDate" style="border-color:#C62828; color:#C62828">Limpar por data</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="range">
-          <label>Período:</label>
-          <input type="date" id="fromDate">
-          <span>até</span>
-          <input type="date" id="toDate">
-          <button class="btn" id="viewRange">Resumo do período</button>
-          <button class="btn outline" id="clearRange" style="border-color:#C62828; color:#C62828">Limpar período</button>
-        </div>
-      </div>
-
-      <!-- Home -->
+      <!-- Home: somente 12 botões -->
       <div class="card" id="homeView">
         <h2 style="margin:6px 0 12px">Maquininhas</h2>
         <div class="grid" id="machinesGrid"></div>
@@ -90,18 +69,35 @@
           <button class="btn green" id="btnIn">Correção/Retirada (verde)</button>
           <button class="btn red" id="btnOut">Pagamento (vermelho)</button>
         </div>
-        <div id="machineTotal" class="total" style="margin-top:14px"></div>
+        <div id="machineTotal" class="in" style="margin-top:14px; font-weight:700;"></div>
         <div id="machineList" class="list" style="margin-top:8px"></div>
       </div>
 
-      <div class="card" id="resumeCard" hidden>
-        <h2 style="margin:6px 0 12px">Resumo do dia</h2>
-        <div id="resumeList"></div>
-      </div>
-
-      <div class="card" id="rangeCard" hidden>
-        <h2 style="margin:6px 0 12px">Resumo do período</h2>
-        <div id="rangeList"></div>
+      <!-- Relatórios (oculto) -->
+      <div class="card reports" id="reportsPanel">
+        <h2 style="margin:6px 0 12px">Relatórios</h2>
+        <div class="section">
+          <div class="title">Resumo do dia:</div>
+          <label for="date">Data</label>
+          <input type="date" id="date">
+          <button class="btn" id="viewResume">Ver</button>
+          <button class="btn outline" id="clearByDate" style="border-color:#C62828; color:#C62828">Limpar por data</button>
+        </div>
+        <div class="section">
+          <div class="title">Período:</div>
+          <label>De</label><input type="date" id="fromDate">
+          <span>Até</span><input type="date" id="toDate">
+          <button class="btn" id="viewRange">Resumo do período</button>
+          <button class="btn outline" id="clearRange" style="border-color:#C62828; color:#C62828">Limpar período</button>
+        </div>
+        <div class="card" id="resumeCard" hidden>
+          <h3 style="margin:6px 0 12px">Resumo do dia</h3>
+          <div id="resumeList"></div>
+        </div>
+        <div class="card" id="rangeCard" hidden>
+          <h3 style="margin:6px 0 12px">Resumo do período</h3>
+          <div id="rangeList"></div>
+        </div>
       </div>
 
       <p class="footer muted">Dados salvos no seu dispositivo (offline). Para instalar como app: menu do Chrome → <b>Instalar app</b>.</p>
@@ -109,7 +105,6 @@
 
     <script src="app.js"></script>
     <script>
-      // PWA install prompt
       let deferredPrompt;
       const installBtn = document.getElementById('installBtn');
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -124,7 +119,6 @@
         if (outcome === 'accepted') installBtn.hidden = true;
         deferredPrompt = null;
       });
-
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('sw.js');
