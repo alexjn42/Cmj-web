@@ -1,15 +1,11 @@
-CMJ (Web) v4 — Home só com botões e relatórios ocultos
-------------------------------------------------------
-- Tela inicial: SOMENTE 12 botões (ícones + nomes). Sem valores.
-- Painel **Relatórios** (botão no topo) com:
-  - Resumo do dia + Limpar por data
-  - Resumo do período (De/Até) + Limpar período
-- Tela por maquininha com dois botões:
-  - Correção/Retirada (verde) → positivo
-  - Pagamento (vermelho) → negativo
-- Após registrar, retorna automaticamente à tela inicial.
+CMJ (Web) v5 — Mudanças pedidas
+--------------------------------
+- Botões de lançamento: **Retirada** (verde) e **Pagamento** (vermelho).
+- Tela inicial: só os 12 botões das maquininhas (sem valores).
+- Filtros movidos para o **final da página** como botões menores: "Resumo do dia" e "Período".
+- **Renomear maquininhas**: botão no topo; nomes ficam salvos no aparelho.
 - PWA offline e instalável.
 
 Como atualizar no GitHub Pages:
-1) Faça upload de todos os arquivos desta pasta para a raiz do repositório (substitua os antigos).
-2) Aguarde 1–2 minutos e recarregue o link do Pages.
+1) Substitua os arquivos do repositório por estes.
+2) Aguarde 1–2 minutos e recarregue seu link.
