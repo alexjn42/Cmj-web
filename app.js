@@ -1,7 +1,7 @@
-// CMJ Web v6.6.2 — Lista da maquininha exibe data/hora; Resumo permanece simples
+// CMJ Web v6.6.3 — Após lançar, voltar para a Home
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
 const DT = new Intl.DateTimeFormat('pt-BR', { dateStyle:'short', timeStyle:'short' });
-const STORAGE_KEY = 'cmj_data_v662';
+const STORAGE_KEY = 'cmj_data_v663';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
@@ -103,7 +103,9 @@ function addTxn(id,cents,type){
   if(!day[key]) day[key]=[];
   day[key].unshift({a:cents,t:type,id:Date.now()}); // timestamp
   saveAll(all);
-  routeToMachine(id); // volta já mostrando a lista atualizada
+  // voltar para a tela inicial (comportamento pedido)
+  routeToHome();
+  renderHome();
 }
 
 backHome?.addEventListener('click',routeToHome);

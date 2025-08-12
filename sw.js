@@ -1,5 +1,5 @@
 
-const CACHE = 'cmj-web-v662';
+const CACHE = 'cmj-web-v663';
 const CORE = ['./','./index.html','./app.js','./manifest.json','./icons/icon-192.png','./icons/icon-512.png','./offline.html'];
 
 self.addEventListener('install', e => {
@@ -7,7 +7,7 @@ self.addEventListener('install', e => {
   self.skipWaiting();
 });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
   self.clients.claim();
 });
 self.addEventListener('fetch', e => {
