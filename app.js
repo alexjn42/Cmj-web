@@ -1,7 +1,7 @@
-// CMJ Web v6.6.1 — Data/Hora no detalhe da maquininha; Resumo simples
+// CMJ Web v6.6.2 — Lista da maquininha exibe data/hora; Resumo permanece simples
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
 const DT = new Intl.DateTimeFormat('pt-BR', { dateStyle:'short', timeStyle:'short' });
-const STORAGE_KEY = 'cmj_data_v661';
+const STORAGE_KEY = 'cmj_data_v662';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
@@ -84,12 +84,14 @@ function showMachine(id){
   machineTotal.textContent=`Total de hoje: ${fmt(sumNet(list))}`;
   machineList.innerHTML='';
   list.forEach(it=>{
-    const line=document.createElement('div'); line.className='line';
-    const left=document.createElement('div'); left.innerHTML=`<b class="${it.t==='in'?'in':'out'}">${it.t==='in'?'Retirada':'Pagamento'}</b> <span class="muted-sm">${fmtDT(it.id)}</span>`;
+    const row=document.createElement('div'); row.className='item';
+    const left=document.createElement('div'); left.className='left';
+    const lineTitle=document.createElement('div'); lineTitle.innerHTML = `<b class="${it.t==='in'?'in':'out'}">${it.t==='in'?'Retirada':'Pagamento'}</b>`;
+    const lineMeta=document.createElement('div'); lineMeta.className='meta'; lineMeta.textContent = fmtDT(it.id);
+    left.appendChild(lineTitle); left.appendChild(lineMeta);
     const right=document.createElement('div'); right.textContent=fmt(it.t==='in'?it.a:-it.a);
-    const wrap=document.createElement('div'); wrap.className='item'; wrap.appendChild(line);
-    wrap.firstChild.appendChild(left); wrap.firstChild.appendChild(right);
-    machineList.appendChild(wrap);
+    row.appendChild(left); row.appendChild(right);
+    machineList.appendChild(row);
   });
 }
 
@@ -101,7 +103,7 @@ function addTxn(id,cents,type){
   if(!day[key]) day[key]=[];
   day[key].unshift({a:cents,t:type,id:Date.now()}); // timestamp
   saveAll(all);
-  routeToHome(); renderHome();
+  routeToMachine(id); // volta já mostrando a lista atualizada
 }
 
 backHome?.addEventListener('click',routeToHome);
@@ -142,9 +144,6 @@ function* dateRange(fromIso,toIso){
     yield dt.toISOString().slice(0,10);
   }
 }
-
-function sumIn(list){ return list.reduce((acc,it)=>acc + (it.t==='in'?it.a:0), 0); }
-function sumOut(list){ return list.reduce((acc,it)=>acc + (it.t==='out'?it.a:0), 0); }
 
 viewSummaryBtn?.addEventListener('click', ()=>{
   const from=fromEl.value, to=toEl.value;
