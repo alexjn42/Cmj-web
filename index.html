@@ -7,9 +7,129 @@
     <meta name="theme-color" content="#72B7FF">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icons/icon-192.png">
+    <style>
+      :root { --blue:#1E88E5; --blue-light:#72B7FF; --green:#2E7D32; --red:#C62828; --bg:#f7fbff; }
+      * { box-sizing: border-box }
+      body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color:#123; }
+      header { position:sticky; top:0; z-index:5; background:white; padding:12px 16px; box-shadow: 0 4px 16px rgba(0,0,0,.06); display:flex; align-items:center; gap:12px }
+      header .logo { width:36px; height:36px; border-radius:10px; background:var(--blue-light); display:grid; place-items:center; font-weight:800; color:white; }
+      header h1 { font-size:18px; margin:0; }
+      .wrap { max-width: 1100px; margin: 16px auto; padding: 0 12px; }
+      .card { background:white; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); padding:16px; margin-bottom:16px; }
+      .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
+      button, input { font: inherit }
+      .btn { background:var(--blue); color:white; border:none; padding:12px 14px; border-radius:12px; cursor:pointer; }
+      .btn.small { padding:8px 10px; font-size:14px; border-radius:10px; }
+      .btn.outline { background:transparent; border:2px solid var(--blue); color:var(--blue) }
+      .btn.green { background:var(--green); }
+      .btn.red { background:var(--red); }
+      .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+      .muted { opacity:.7 }
+      .machine-card { padding:18px; border:1px solid #e7eef7; border-radius:14px; background:#fbfdff; display:flex; flex-direction:column; gap:8px; align-items:center; cursor:pointer; }
+      .icon { width:64px; height:64px; border-radius:16px; background:var(--blue-light); display:grid; place-items:center; font-weight:900; color:white; font-size:22px; }
+      .machine-card h3 { margin:0; font-size:15px; text-align:center }
+      .list { max-height:260px; overflow:auto; border-top:1px dashed #e5edf7; margin-top:8px; padding-top:8px }
+      .item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f2f6fb }
+      .in { color: var(--green) } .out { color: var(--red) }
+      .footer { text-align:center; padding:24px; color:#567 }
+      input[type="text"], input[type="date"] { padding:10px 12px; border:1px solid #dbe6f3; border-radius:12px; width:100%; }
+      .back { background:transparent; border:0; color:var(--blue); font-weight:700; cursor:pointer; }
+      .bottom-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+      .panel { display:none; }
+      .panel.show { display:block; }
+      .panel .section { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+      .panel .title { font-weight:800; margin:0 10px 0 0; }
+      .name-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:10px; }
+      .name-grid label { display:block; font-size:12px; opacity:.7; margin-bottom:4px }
+      .name-grid input { width:100%; }
+      .pill { font-size:12px; padding:4px 8px; border-radius:999px; background:#eef5ff; display:inline-block; margin-right:6px; }
+      .pill .label { opacity:.7; margin-right:6px }
+    </style>
   </head>
   <body>
-    <h1>CMJ v6.4 FULL</h1>
-    <p>Este é o pacote recriado. Substitua no GitHub Pages.</p>
+    <header>
+      <div class="logo">CMJ</div>
+      <h1>CMJ — Cálculo Maquininha (Web)</h1>
+      <div style="flex:1"></div>
+      <button class="btn outline small" id="toggleNames">Renomear maquininhas</button>
+      <button class="btn outline small" id="installBtn" hidden>Instalar</button>
+    </header>
+
+    <div class="wrap">
+      <div class="card" id="homeView">
+        <div class="grid" id="machinesGrid"></div>
+      </div>
+
+      <div class="card" id="machineView" hidden>
+        <div class="row" style="justify-content:space-between;">
+          <button class="back" id="backHome">← Voltar</button>
+          <h2 id="machineTitle" style="margin:0 auto">Maquininha</h2>
+          <span style="width:60px"></span>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <input type="text" id="valueInput" placeholder="Valor (ex: 10,00)" inputmode="decimal" autocomplete="off" autocapitalize="off" />
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn green" id="btnIn">Retirada</button>
+          <button class="btn red" id="btnOut">Pagamento</button>
+        </div>
+        <div id="machineTotal" class="in" style="margin-top:14px; font-weight:700;"></div>
+        <div id="machineList" class="list" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card panel" id="namesPanel">
+        <h2 style="margin:6px 0 12px">Renomear maquininhas</h2>
+        <div class="name-grid" id="nameGrid"></div>
+        <div class="row" style="justify-content:flex-end; margin-top:10px">
+          <button class="btn small" id="saveNames">Salvar nomes</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="bottom-actions">
+          <button class="btn outline small" id="toggleSummary">Resumo</button>
+        </div>
+
+        <div class="panel" id="summaryPanel">
+          <div class="section">
+            <div class="title">Resumo:</div>
+            <label>De</label><input type="date" id="fromDate">
+            <span>Até</span><input type="date" id="toDate">
+            <button class="btn small" id="viewSummary">Gerar resumo</button>
+            <button class="btn outline small" id="clearRange" style="border-color:#C62828; color:#C62828">Limpar período</button>
+          </div>
+          <div class="card" id="rangeCard" hidden>
+            <h3 style="margin:6px 0 12px">Detalhes por maquininha</h3>
+            <div id="rangeList"></div>
+            <div id="summaryTotals" style="margin-top:12px; border-top:1px dashed #e5edf7; padding-top:10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="footer muted">Dados salvos no seu dispositivo (offline). Para instalar como app: menu do Chrome → <b>Instalar app</b>.</p>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      let deferredPrompt;
+      const installBtn = document.getElementById('installBtn');
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.hidden = false;
+      });
+      installBtn?.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') installBtn.hidden = true;
+        deferredPrompt = null;
+      });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js');
+        });
+      }
+    </script>
   </body>
 </html>
