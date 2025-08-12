@@ -1,11 +1,13 @@
-// CMJ Web v6.5 FINAL — Resumo: Entradas/Saídas/Saldo por maquininha + tudo que já tínhamos
+// CMJ Web v6.6.1 — Data/Hora no detalhe da maquininha; Resumo simples
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
-const STORAGE_KEY = 'cmj_data_v65_final';
+const DT = new Intl.DateTimeFormat('pt-BR', { dateStyle:'short', timeStyle:'short' });
+const STORAGE_KEY = 'cmj_data_v661';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
 function fmt(c){ const s=c<0?'-':''; const a=Math.abs(c); return s+BR.format(a/100); }
 function fmtAbs(c){ return BR.format(Math.abs(c)/100); }
+function fmtDT(ms){ try{ return DT.format(new Date(ms)); }catch{ return '' } }
 
 function loadAll(){ try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
 function saveAll(o){ localStorage.setItem(STORAGE_KEY, JSON.stringify(o)); }
@@ -55,7 +57,6 @@ function routeToMachine(id){
   homeView.hidden=true;
   machineView.hidden=false;
   showMachine(id);
-  // foco automático robusto
   setTimeout(()=>{ try{ valueInput.focus({preventScroll:true}); valueInput.select(); }catch(e){} }, 50);
 }
 
@@ -83,10 +84,12 @@ function showMachine(id){
   machineTotal.textContent=`Total de hoje: ${fmt(sumNet(list))}`;
   machineList.innerHTML='';
   list.forEach(it=>{
-    const line=document.createElement('div'); line.className='item';
-    const left=document.createElement('div'); left.innerHTML=`<b class="${it.t==='in'?'in':'out'}">${it.t==='in'?'Retirada':'Pagamento'}</b>`;
+    const line=document.createElement('div'); line.className='line';
+    const left=document.createElement('div'); left.innerHTML=`<b class="${it.t==='in'?'in':'out'}">${it.t==='in'?'Retirada':'Pagamento'}</b> <span class="muted-sm">${fmtDT(it.id)}</span>`;
     const right=document.createElement('div'); right.textContent=fmt(it.t==='in'?it.a:-it.a);
-    line.appendChild(left); line.appendChild(right); machineList.appendChild(line);
+    const wrap=document.createElement('div'); wrap.className='item'; wrap.appendChild(line);
+    wrap.firstChild.appendChild(left); wrap.firstChild.appendChild(right);
+    machineList.appendChild(wrap);
   });
 }
 
@@ -96,7 +99,7 @@ function addTxn(id,cents,type){
   const day=getDayData(all,iso);
   const key=String(id);
   if(!day[key]) day[key]=[];
-  day[key].unshift({a:cents,t:type,id:Date.now()});
+  day[key].unshift({a:cents,t:type,id:Date.now()}); // timestamp
   saveAll(all);
   routeToHome(); renderHome();
 }
@@ -140,15 +143,18 @@ function* dateRange(fromIso,toIso){
   }
 }
 
+function sumIn(list){ return list.reduce((acc,it)=>acc + (it.t==='in'?it.a:0), 0); }
+function sumOut(list){ return list.reduce((acc,it)=>acc + (it.t==='out'?it.a:0), 0); }
+
 viewSummaryBtn?.addEventListener('click', ()=>{
   const from=fromEl.value, to=toEl.value;
   if(!from||!to){ alert('Selecione as duas datas.'); return; }
   if(from>to){ alert('A data "De" não pode ser maior que "Até".'); return; }
 
   const all=loadAll();
-  const perMachineNet  = Array.from({length:13},()=>0);
   const perMachineIn   = Array.from({length:13},()=>0);
   const perMachineOut  = Array.from({length:13},()=>0);
+  const perMachineNet  = Array.from({length:13},()=>0);
   let totalInAll = 0, totalOutAll = 0;
 
   for(const iso of dateRange(from,to)){
