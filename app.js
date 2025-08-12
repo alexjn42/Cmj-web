@@ -1,6 +1,6 @@
-// CMJ Web v6.5 — Resumo: Entradas/Saídas/Saldo por maquininha
+// CMJ Web v6.5 FINAL — Resumo: Entradas/Saídas/Saldo por maquininha + tudo que já tínhamos
 const BR = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
-const STORAGE_KEY = 'cmj_data_v65';
+const STORAGE_KEY = 'cmj_data_v65_final';
 const NAMES_KEY   = 'cmj_names_v1';
 
 function toCents(txt){ let clean=(txt||'').toString().trim().replace(/\s+/g,'').replace('R$','').replace(/\./g,''); if(!clean) return 0; if(clean.includes(',')){ const [r,c='0']=clean.split(','); return (parseInt(r||'0',10)*100)+parseInt((c+'0').slice(0,2),10);} return parseInt(clean,10)*100; }
@@ -55,8 +55,8 @@ function routeToMachine(id){
   homeView.hidden=true;
   machineView.hidden=false;
   showMachine(id);
-  // foco automático com atraso curto para teclados móveis
-  requestAnimationFrame(()=> setTimeout(()=>{ valueInput.focus(); valueInput.select(); }, 30));
+  // foco automático robusto
+  setTimeout(()=>{ try{ valueInput.focus({preventScroll:true}); valueInput.select(); }catch(e){} }, 50);
 }
 
 function renderHome(){
